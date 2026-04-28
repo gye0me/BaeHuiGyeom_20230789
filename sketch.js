@@ -32,6 +32,8 @@ function setup() {
   createCanvas(2816, 1536);
   px = 200;
   py = 200;
+
+  randomizeDots();
 }
 
 function draw() {
@@ -98,9 +100,9 @@ function draw() {
   if (activeDotsCount == 0) gameWin = true;
     // 점수
   fill(255);
-  textSize(80);
-  text("점수: " + score, 50, 80);
-  text("에너지: " + energy, 50, 180);
+  textSize(70);
+  text("점수: " + score, 20, 80);
+  text("에너지: " + energy, 20, 180);
 
   if (gameOver) {
     fill(255, 0, 0);
@@ -154,25 +156,18 @@ function randomizeDots() {
     strokeWeight(9);
     noFill();
 
-    rect(100, 100, 2616, 1336); // 가장 바깥
-    
-    rect(1200, 600, 400, 300); // 중앙 박스
+    line(410, 50, 2516, 50); //외곽 상단
+    line(2516, 50, 2516, 488);
+    line(2516, 488, 2316, 488);
 
-    rect (300, 300, 400, 200); // 왼쪽 박스
-    rect (2100, 300, 400, 200); // 오른쪽 박스
+    line(50, 768, 500, 768); // 복도
+    line(2316, 768, 2816, 768); 
+    line(50, 668, 500, 668);
+    line(2316, 668, 2816, 668);
 
-    rect (300, 1000, 400, 200); // 왼쪽 아래 박스
-    rect (2000, 1000, 400, 200); // 오른쪽 아래 박스
+    rect(1218, 630, 380, 200); // 중앙 벽
 
-    line (1400, 100, 1400, 400); // 상단 중앙
-    line (1400, 1100, 1400, 1436); // 하단 중앙
 
-    line(100, 100, 2716, 100);
-    line(100, 100, 100, 1436);
-
-    line(100, 768, 2716, 768);
-  
-    rect(1200, 600, 400, 300);
     }
 
     function isHittingWall(nx, ny) {
