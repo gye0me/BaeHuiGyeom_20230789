@@ -377,7 +377,7 @@ function randomizeDots() {
     line(2020, 1140, 2020, 1350);
     line(1740, 1350, 2020, 1350);
     
-    stroke(255, 0, 0);
+    noStroke();
     fill(0, 0, 0);
 
     rect(300, 540, 250, 120);
