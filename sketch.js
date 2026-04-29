@@ -1,29 +1,40 @@
+// 플레이어 위치 및 크기
 let px, py;
 let pd = 57;
+
+// 적 이동 상태 및 방향
 let isMoving = false;
 let dir = "RIGHT";
 let eSpeed = 10;
 
+// 적 위치 배열
 let ex = [500, 1000, 1500, 2000, 2500, 800, 1200, 1800, 2200];
 let ey = [500, 1000, 500, 1000, 500, 300, 700, 300, 700];
 
+// 콩 위치 배열
 let dx = [100, 200, 300, 400, 500];
 let dy = [150, 250, 100, 300, 200];
+
+// 콩 크기 및 활성 상태 배열
 let dSize = 30;
 let dActive = [true, true, true, true, true];
 let activeDotsCount = 0;
 
+// 실시간 정보 표기 설정
 let score = 0;
 let energy = 3;
 let gameOver = false;
 let gameWin = false;
 
+// 벽 충돌 시스템
+// 맵의 벽과 안전 구역 정의
 let zones = [
   {x: 355,  y: 50,  w: 2106, h: 1386},
   {x: -100,    y: 668, w: 655,  h: 152},
   {x: 2261, y: 668, w: 655,  h: 152},
 ];
 
+// 안전 구역 정의 (플레이어가 안전하게 이동할 수 있는 영역)
 let safeZones = [
   {x: 370,  y: 65,   w: 400,  h: 80},
   {x: 640,  y: 65,   w: 130,  h: 280},
@@ -47,6 +58,7 @@ let safeZones = [
   {x: 1900, y: 1200, w: 500,  h: 150},
 ];
 
+// 벽 정의 (플레이어가 충돌하는 영역)
 let walls = [
   {x: 1870, y: 668,  w: 130, h: 175},
   {x: 1828, y: 668,  w: 40,  h: 175},
@@ -97,38 +109,34 @@ let walls = [
 ];
 
 function setup() {
-  createCanvas(2816, 1536);
+  createCanvas(2816, 1536); //해상도 크기 조절
+  // 초기 플레이어 위치 설정
   px = 400;
   py = 300;
 
+  // 아이템(콩)배치 (맵 구석까지 가는 규칙 배열)
   dx = [430, 1420, 1790, 1200, 2400];
   dy = [200, 340, 700, 1100, 1200];
 }
 
-function randomSafePos() {
-  let z = safeZones[floor(random(safeZones.length))];
-  return {
-    x: random(z.x + 20, z.x + z.w - 20),
-    y: random(z.y + 20, z.y + z.h - 20)
-  };
-}
-
+// 벽 충돌 체크 함수
 function isHittingWall(nx, ny) {
   let r = pd / 2;
 
   let inZone = false;
-  for (let z of zones) {
-    if (nx - r > z.x && nx + r < z.x + z.w &&
-        ny - r > z.y && ny + r < z.y + z.h) {
+  for (let z of zones) { // 안전 구역 내에 있는지 체크
+    if (nx - r > z.x && nx + r < z.x + z.w && // 플레이어의 왼쪽과 오른쪽이 구역의 왼쪽과 오른쪽 사이에 있는지
+        ny - r > z.y && ny + r < z.y + z.h) { 
       inZone = true;
       break;
     }
   }
-  if (!inZone) return true;
 
-  for (let w of walls) {
-    if (nx + r > w.x && nx - r < w.x + w.w &&
-        ny + r > w.y && ny - r < w.y + w.h) {
+  if (!inZone) return true; // 안전 구역 밖이면 벽에 부딪힌 것으로 간주
+
+  for (let w of walls) { // 벽과 충돌하는지 체크
+    if (nx + r > w.x && nx - r < w.x + w.w && // 플레이어의 왼쪽과 오른쪽이 벽의 왼쪽과 오른쪽 사이에 있는지
+        ny + r > w.y && ny - r < w.y + w.h) { 
       return true;
     }
   }
@@ -142,12 +150,14 @@ function draw() {
   isMoving = false;
   activeDotsCount = 0;
 
+  // 플레이어 키보드 컨트롤
   if (!gameOver && !gameWin) {
     if (keyIsDown(LEFT_ARROW))  { if (!isHittingWall(px - 1, py)) px -= 1; isMoving = true; dir = "LEFT"; }
     if (keyIsDown(RIGHT_ARROW)) { if (!isHittingWall(px + 1, py)) px += 1; isMoving = true; dir = "RIGHT"; }
     if (keyIsDown(UP_ARROW))    { if (!isHittingWall(px, py - 1)) py -= 1; isMoving = true; dir = "UP"; }
     if (keyIsDown(DOWN_ARROW))  { if (!isHittingWall(px, py + 1)) py += 1; isMoving = true; dir = "DOWN"; }
 
+    // 적 이동 및 충돌 체크
     for (let i = 0; i < 5 + floor(score / 10); i++) {
       fill(0, 0, 255);
       noStroke();
@@ -165,6 +175,7 @@ function draw() {
     }
   }
 
+  // 애니메이션 효과: 플레이어가 이동 중일 때 입을 벌리는 효과
   fill(255, 255, 0);
   noStroke();
   if (isMoving) {
@@ -176,6 +187,7 @@ function draw() {
     ellipse(px, py, pd);
   }
 
+  // 플레이어 이동 처리 (벽 충돌 체크 포함)
   if (keyIsDown(LEFT_ARROW)) {
     if (!isHittingWall(px - 4, py)) px -= 4;
     isMoving = true; dir = "LEFT";
@@ -196,11 +208,13 @@ function draw() {
     isMoving = true; dir = "DOWN";
   }
 
+  // 화면 워프 로직: 맵의 양쪽 통로에서 화면을 넘어가면 반대편으로 이동
   if (py > 668 && py < 820) {
     if (px < -50 ) px = 2800;
     if (px > 2866) px = 16;
   }
 
+  // 아이템 습득 및 점수 계산, 난이도 조절: 점수 높아지면 적 수 증가
   for (let i = 0; i < 5 + floor(score / 10); i++) {
     if (dActive[i]) {
       fill(255, 0, 0);
@@ -215,8 +229,10 @@ function draw() {
     }
   }
 
+  // 게임 승리 조건 체크
   if (activeDotsCount == 0) gameWin = true;
 
+  // 실시간 정보 표기
   fill(255);
   noStroke();
   textAlign(LEFT, TOP);
@@ -224,6 +240,7 @@ function draw() {
   text("점수: " + score, 20, 80);
   text("에너지: " + energy, 20, 180);
 
+  // 게임 오버 표시
   if (gameOver) {
     fill(255, 0, 0);
     textSize(120);
@@ -233,6 +250,7 @@ function draw() {
     text("R키를 누르세요", width / 2, height / 2 + 100);
   }
 
+  // 게임 승리 표시
   if (gameWin) {
     fill(0, 255, 0);
     textSize(120);
@@ -242,9 +260,11 @@ function draw() {
     text("R키를 누르세요", width / 2, height / 2 + 100);
   }
 
+  // 초기화 및 리스타트 일부분, 게임 오버 또는 승리 상태에서 R키를 누르면 게임이 초기화되고 다시 시작
   if (keyIsPressed && key == 'r') resetGame();
 }
 
+// 게임 초기화 함수: 플레이어 위치, 점수, 에너지, 게임 상태, 방향 등을 초기값으로 설정하고 콩을 다시 활성화
 function resetGame() {
   px = 400;
   py = 300;
@@ -256,6 +276,7 @@ function resetGame() {
   randomizeDots();
 }
 
+// 맵 그리기 함수: 맵의 배경, 벽, 안전 구역 등을 그리기
 function drawMap() {
     noStroke();
     fill(0, 5, 65);
@@ -480,6 +501,7 @@ function drawMap() {
     line(2020, 1140, 2020, 1350);
     line(1740, 1350, 2020, 1350);
     
+    // 배경색이 파란 색으로 칠해진 부분을 검정 사각형으로 덮음
     noStroke();
     fill(0, 0, 0);
 
@@ -526,6 +548,7 @@ function drawMap() {
     
     }
 
+    // 초기화 및 리스타트
     function resetGame() {
       px = 400;
       py = 300;
