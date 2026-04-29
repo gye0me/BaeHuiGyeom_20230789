@@ -20,8 +20,8 @@ let gameWin = false;
 
 let zones = [
   {x: 355,  y: 50,  w: 2106, h: 1386},
-  {x: 0,    y: 668, w: 555,  h: 152},
-  {x: 2261, y: 668, w: 555,  h: 152},
+  {x: -100,    y: 668, w: 655,  h: 152},
+  {x: 2261, y: 668, w: 655,  h: 152},
 ];
 
 let safeZones = [
@@ -100,7 +100,9 @@ function setup() {
   createCanvas(2816, 1536);
   px = 400;
   py = 300;
-  randomizeDots();
+
+  dx = [430, 1420, 1790, 1200, 2400];
+  dy = [200, 340, 700, 1100, 1200];
 }
 
 function randomSafePos() {
@@ -109,15 +111,6 @@ function randomSafePos() {
     x: random(z.x + 20, z.x + z.w - 20),
     y: random(z.y + 20, z.y + z.h - 20)
   };
-}
-
-function randomizeDots() {
-  for (let i = 0; i < 5; i++) {
-    let pos = randomSafePos();
-    dx[i] = pos.x;
-    dy[i] = pos.y;
-    dActive[i] = true;
-  }
 }
 
 function isHittingWall(nx, ny) {
@@ -183,6 +176,31 @@ function draw() {
     ellipse(px, py, pd);
   }
 
+  if (keyIsDown(LEFT_ARROW)) {
+    if (!isHittingWall(px - 4, py)) px -= 4;
+    isMoving = true; dir = "LEFT";
+    } 
+
+  if (keyIsDown(RIGHT_ARROW)) {
+    if (!isHittingWall(px + 4, py)) px += 4;
+    isMoving = true; dir = "RIGHT";
+  }
+
+  if (keyIsDown(UP_ARROW)) {
+    if (!isHittingWall(px, py - 4)) py -= 4;
+    isMoving = true; dir = "UP";
+  }
+
+  if (keyIsDown(DOWN_ARROW)) {
+    if (!isHittingWall(px, py + 4)) py += 4;
+    isMoving = true; dir = "DOWN";
+  }
+
+  if (py > 668 && py < 820) {
+    if (px < -50 ) px = 2800;
+    if (px > 2866) px = 16;
+  }
+
   for (let i = 0; i < 5; i++) {
     if (dActive[i]) {
       fill(255, 0, 0);
@@ -201,6 +219,7 @@ function draw() {
 
   fill(255);
   noStroke();
+  textAlign(LEFT, TOP);
   textSize(70);
   text("점수: " + score, 20, 80);
   text("에너지: " + energy, 20, 180);
@@ -508,8 +527,8 @@ function drawMap() {
     }
 
     function resetGame() {
-      px = 200;
-      py = 200;
+      px = 400;
+      py = 300;
       score = 0;
       energy = 3;
       gameOver = false;
