@@ -2,10 +2,10 @@ let px, py;
 let pd = 57;
 let isMoving = false;
 let dir = "RIGHT";
-let eSpeed = 5;
+let eSpeed = 10;
 
-let ex = [500, 1000, 1500, 2000, 2500];
-let ey = [500, 1000, 500, 1000, 500];
+let ex = [500, 1000, 1500, 2000, 2500, 800, 1200, 1800, 2200];
+let ey = [500, 1000, 500, 1000, 500, 300, 700, 300, 700];
 
 let dx = [100, 200, 300, 400, 500];
 let dy = [150, 250, 100, 300, 200];
@@ -143,12 +143,12 @@ function draw() {
   activeDotsCount = 0;
 
   if (!gameOver && !gameWin) {
-    if (keyIsDown(LEFT_ARROW))  { if (!isHittingWall(px - 4, py)) px -= 4; isMoving = true; dir = "LEFT"; }
-    if (keyIsDown(RIGHT_ARROW)) { if (!isHittingWall(px + 4, py)) px += 4; isMoving = true; dir = "RIGHT"; }
-    if (keyIsDown(UP_ARROW))    { if (!isHittingWall(px, py - 4)) py -= 4; isMoving = true; dir = "UP"; }
-    if (keyIsDown(DOWN_ARROW))  { if (!isHittingWall(px, py + 4)) py += 4; isMoving = true; dir = "DOWN"; }
+    if (keyIsDown(LEFT_ARROW))  { if (!isHittingWall(px - 1, py)) px -= 1; isMoving = true; dir = "LEFT"; }
+    if (keyIsDown(RIGHT_ARROW)) { if (!isHittingWall(px + 1, py)) px += 1; isMoving = true; dir = "RIGHT"; }
+    if (keyIsDown(UP_ARROW))    { if (!isHittingWall(px, py - 1)) py -= 1; isMoving = true; dir = "UP"; }
+    if (keyIsDown(DOWN_ARROW))  { if (!isHittingWall(px, py + 1)) py += 1; isMoving = true; dir = "DOWN"; }
 
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 5 + floor(score / 10); i++) {
       fill(0, 0, 255);
       noStroke();
       rect(ex[i], ey[i], 40, 40);
@@ -201,7 +201,7 @@ function draw() {
     if (px > 2866) px = 16;
   }
 
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 5 + floor(score / 10); i++) {
     if (dActive[i]) {
       fill(255, 0, 0);
       noStroke();
