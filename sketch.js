@@ -1,13 +1,11 @@
 let px, py;
-let pd = 57; // 플레이어 크기
+let pd = 57;
 let isMoving = false;
 let dir = "RIGHT";
-let eSpeed = 5; // 적의 속도
+let eSpeed = 5;
 
-let ex = [500, 1000, 1500, 2000, 2500]; // 적의 위치
+let ex = [500, 1000, 1500, 2000, 2500];
 let ey = [500, 1000, 500, 1000, 500];
-let eSize = 5;
-
 
 let dx = [100, 200, 300, 400, 500];
 let dy = [150, 250, 100, 300, 200];
@@ -20,86 +18,189 @@ let energy = 3;
 let gameOver = false;
 let gameWin = false;
 
+let zones = [
+  {x: 355,  y: 50,  w: 2106, h: 1386},
+  {x: 0,    y: 668, w: 555,  h: 152},
+  {x: 2261, y: 668, w: 555,  h: 152},
+];
+
+let safeZones = [
+  {x: 370,  y: 65,   w: 400,  h: 80},
+  {x: 640,  y: 65,   w: 130,  h: 280},
+  {x: 1050, y: 65,   w: 270,  h: 280},
+  {x: 1470, y: 65,   w: 270,  h: 280},
+  {x: 1700, y: 65,   w: 130,  h: 280},
+  {x: 1870, y: 65,   w: 400,  h: 80},
+  {x: 370,  y: 350,  w: 390,  h: 150},
+  {x: 2060, y: 350,  w: 390,  h: 150},
+  {x: 370,  y: 540,  w: 180,  h: 120},
+  {x: 1660, y: 540,  w: 180,  h: 120},
+  {x: 20,   y: 675,  w: 520,  h: 130},
+  {x: 2270, y: 675,  w: 520,  h: 130},
+  {x: 370,  y: 830,  w: 180,  h: 120},
+  {x: 1660, y: 830,  w: 180,  h: 120},
+  {x: 370,  y: 980,  w: 290,  h: 180},
+  {x: 760,  y: 980,  w: 380,  h: 180},
+  {x: 1680, y: 980,  w: 290,  h: 180},
+  {x: 2020, y: 980,  w: 390,  h: 180},
+  {x: 370,  y: 1200, w: 500,  h: 150},
+  {x: 1900, y: 1200, w: 500,  h: 150},
+];
+
+let walls = [
+  {x: 1870, y: 668,  w: 130, h: 175},
+  {x: 1828, y: 668,  w: 40,  h: 175},
+  {x: 920,  y: 668,  w: 40,  h: 175},
+  {x: 788,  y: 668,  w: 130, h: 175},
+  {x: 1080, y: 900,  w: 40,  h: 160},
+  {x: 1700, y: 900,  w: 40,  h: 160},
+  {x: 700,  y: 1000, w: 250, h: 40},
+  {x: 1866, y: 1000, w: 250, h: 40},
+  {x: 950,  y: 1200, w: 295, h: 30},
+  {x: 1560, y: 1200, w: 295, h: 30},
+  {x: 490,  y: 1080, w: 40,  h: 130},
+  {x: 2290, y: 1080, w: 40,  h: 130},
+  {x: 780,  y: 160,  w: 480, h: 100},
+  {x: 1560, y: 160,  w: 480, h: 100},
+  {x: 2180, y: 160,  w: 150, h: 100},
+  {x: 486,  y: 160,  w: 150, h: 100},
+  {x: 486,  y: 355,  w: 150, h: 40},
+  {x: 2180, y: 355,  w: 150, h: 40},
+  {x: 770,  y: 1280, w: 100, h: 30},
+  {x: 1890, y: 1280, w: 100, h: 30},
+  {x: 300,  y: 540,  w: 250, h: 120},
+  {x: 300,  y: 830,  w: 250, h: 130},
+  {x: 2270, y: 540,  w: 250, h: 120},
+  {x: 2270, y: 830,  w: 250, h: 130},
+  {x: 1401, y: 55,   w: 30,  h: 190},
+  {x: 1230, y: 410,  w: 360, h: 20},
+  {x: 1377, y: 440,  w: 70,  h: 80},
+  {x: 1230, y: 1010, w: 360, h: 20},
+  {x: 1405, y: 1034, w: 10,  h: 100},
+  {x: 1230, y: 1270, w: 360, h: 20},
+  {x: 1405, y: 1290, w: 10,  h: 100},
+  {x: 1230, y: 680,  w: 360, h: 180},
+  {x: 792,  y: 400,  w: 60,  h: 90},
+  {x: 792,  y: 370,  w: 190, h: 20},
+  {x: 1985, y: 400,  w: 60,  h: 90},
+  {x: 1855, y: 370,  w: 190, h: 20},
+  {x: 956,  y: 520,  w: 300, h: 30},
+  {x: 1110, y: 370,  w: 30,  h: 320},
+  {x: 1596, y: 520,  w: 300, h: 30},
+  {x: 1710, y: 370,  w: 30,  h: 320},
+  {x: 640,  y: 1130, w: 83,  h: 230},
+  {x: 500,  y: 1355, w: 740, h: 20},
+  {x: 1093, y: 1291, w: 20,  h: 70},
+  {x: 2030, y: 1130, w: 143, h: 230},
+  {x: 1580, y: 1355, w: 700, h: 20},
+  {x: 1710, y: 1290, w: 20,  h: 70},
+];
+
+function setup() {
+  createCanvas(2816, 1536);
+  px = 400;
+  py = 300;
+  randomizeDots();
+}
+
+function randomSafePos() {
+  let z = safeZones[floor(random(safeZones.length))];
+  return {
+    x: random(z.x + 20, z.x + z.w - 20),
+    y: random(z.y + 20, z.y + z.h - 20)
+  };
+}
+
 function randomizeDots() {
-  for(let i = 0; i < 5; i++) {
-    dx[i] = random(100, 2700);
-    dy[i] = random(100, 1400);
+  for (let i = 0; i < 5; i++) {
+    let pos = randomSafePos();
+    dx[i] = pos.x;
+    dy[i] = pos.y;
     dActive[i] = true;
   }
 }
 
-function setup() {
-  createCanvas(2816, 1536);
-  px = 200;
-  py = 200;
+function isHittingWall(nx, ny) {
+  let r = pd / 2;
 
-  randomizeDots();
+  let inZone = false;
+  for (let z of zones) {
+    if (nx - r > z.x && nx + r < z.x + z.w &&
+        ny - r > z.y && ny + r < z.y + z.h) {
+      inZone = true;
+      break;
+    }
+  }
+  if (!inZone) return true;
+
+  for (let w of walls) {
+    if (nx + r > w.x && nx - r < w.x + w.w &&
+        ny + r > w.y && ny - r < w.y + w.h) {
+      return true;
+    }
+  }
+  return false;
 }
 
 function draw() {
   background(0);
+  drawMap();
+
   isMoving = false;
   activeDotsCount = 0;
 
-
   if (!gameOver && !gameWin) {
-    if(keyIsDown(LEFT_ARROW)) { if (!isHittingWall(px - 4, py)) px -= 4; isMoving = true; dir = "LEFT";}
-    if(keyIsDown(RIGHT_ARROW)) { if (!isHittingWall(px + 4, py)) px += 4; isMoving = true; dir = "RIGHT";}
-    if(keyIsDown(UP_ARROW)) { if (!isHittingWall(px, py - 4)) py -= 4; isMoving = true; dir = "UP";}
-    if(keyIsDown(DOWN_ARROW)) {if (!isHittingWall(px, py + 4)) py += 4; isMoving = true; dir = "DOWN";}
-  
+    if (keyIsDown(LEFT_ARROW))  { if (!isHittingWall(px - 4, py)) px -= 4; isMoving = true; dir = "LEFT"; }
+    if (keyIsDown(RIGHT_ARROW)) { if (!isHittingWall(px + 4, py)) px += 4; isMoving = true; dir = "RIGHT"; }
+    if (keyIsDown(UP_ARROW))    { if (!isHittingWall(px, py - 4)) py -= 4; isMoving = true; dir = "UP"; }
+    if (keyIsDown(DOWN_ARROW))  { if (!isHittingWall(px, py + 4)) py += 4; isMoving = true; dir = "DOWN"; }
 
-  for(let i = 0; i < 5; i++) {
-    fill(0, 0, 255);
-    rect(ex[i], ey[i], 40, 40);
-    ex[i] += random(-eSpeed, eSpeed);
-    ey[i] += random(-eSpeed, eSpeed);
+    for (let i = 0; i < 5; i++) {
+      fill(0, 0, 255);
+      noStroke();
+      rect(ex[i], ey[i], 40, 40);
+      ex[i] += random(-eSpeed, eSpeed);
+      ey[i] += random(-eSpeed, eSpeed);
 
-    let d =dist(px, py, ex[i], ey[i]);
-    if (d < (pd + 40) / 2) {
-      energy--;
-      ex[i] = random(200, 2500);
-      ey[i] = random(200, 1200);
-      if (energy <= 0) gameOver = true;
+      let d = dist(px, py, ex[i], ey[i]);
+      if (d < (pd + 40) / 2) {
+        energy--;
+        ex[i] = random(200, 2500);
+        ey[i] = random(200, 1200);
+        if (energy <= 0) gameOver = true;
+      }
     }
   }
-}
-
-  drawMap();
 
   fill(255, 255, 0);
   noStroke();
   if (isMoving) {
-    if (dir == "RIGHT") {
-      arc (px, py, pd, pd, 0.5, TWO_PI - 0.5);
-    } else if (dir == "LEFT") {
-      arc (px, py, pd, pd, PI + 0.5, PI - 0.5);
-    } else if (dir == "UP") {
-      arc (px, py, pd, pd, -HALF_PI + 0.5, -HALF_PI - 0.5);
-    } else if (dir == "DOWN") {
-      arc (px, py, pd, pd, HALF_PI + 0.5, HALF_PI - 0.5);
-    }
+    if (dir == "RIGHT")     arc(px, py, pd, pd, 0.5, TWO_PI - 0.5);
+    else if (dir == "LEFT") arc(px, py, pd, pd, PI + 0.5, PI - 0.5);
+    else if (dir == "UP")   arc(px, py, pd, pd, -HALF_PI + 0.5, -HALF_PI - 0.5);
+    else if (dir == "DOWN") arc(px, py, pd, pd, HALF_PI + 0.5, HALF_PI - 0.5);
   } else {
     ellipse(px, py, pd);
   }
-  // 점 먹기
-  for(let i = 0; i < 5; i++) {
-    if(dActive[i] == true) {
+
+  for (let i = 0; i < 5; i++) {
+    if (dActive[i]) {
       fill(255, 0, 0);
+      noStroke();
       ellipse(dx[i], dy[i], dSize);
       activeDotsCount++;
-      
       let d = dist(px, py, dx[i], dy[i]);
-      if(d < (pd + dSize) / 2) {
+      if (d < (pd + dSize) / 2) {
         dActive[i] = false;
-        score = score + 10;
+        score += 10;
       }
     }
   }
 
   if (activeDotsCount == 0) gameWin = true;
-    // 점수
+
   fill(255);
+  noStroke();
   textSize(70);
   text("점수: " + score, 20, 80);
   text("에너지: " + energy, 20, 180);
@@ -121,41 +222,24 @@ function draw() {
     textSize(60);
     text("R키를 누르세요", width / 2, height / 2 + 100);
   }
+
   if (keyIsPressed && key == 'r') resetGame();
 }
 
-  for(let i = 0; i < 5; i++) {
-    if(dActive[i] == true) {
-      let d = dist(px, py, dx[i], dy[i]);
-      if(d < (pd + dSize) / 2) {
-        energy--;
-        dActive[i] = false;
-        if (energy <= 0) {
-          gameOver = true;
-        }
-      }
-    }
-  }
-
-
-    
-  
-
-function randomizeDots() {
-  for(let i = 0; i < 5; i++) {
-    dx[i] = random(200, 2500);
-    dy[i] = random(200, 1200);
-    dActive[i] = true;
-  }
+function resetGame() {
+  px = 400;
+  py = 300;
+  score = 0;
+  energy = 3;
+  gameOver = false;
+  gameWin = false;
+  dir = "RIGHT";
+  randomizeDots();
 }
 
-
-
-  function drawMap() {
-
+function drawMap() {
     noStroke();
     fill(0, 5, 65);
-
     rect(355, 50, 2106, 1386);
     
     rect (0, 688, 555, 152);
@@ -163,7 +247,7 @@ function randomizeDots() {
 
 
     fill(0);
-    stroke(0, 200, 400);
+    stroke(0, 200, 255);
     strokeWeight(9);
 
     // 외곽 상단
@@ -423,15 +507,6 @@ function randomizeDots() {
     
     }
 
-    function isHittingWall(nx, ny) {
-      let r = (pd / 20) + 3;
-      if (nx - r < 100 || nx + r > 2716 || ny - r < 100 || ny + r > 1436) return true;
-      if (nx + r > 1200 && nx - r < 1600 && ny + r > 600 && ny - r < 900) return true;
-      if (nx + r > 300 && nx - r < 700 && ny + r > 300 && ny - r < 500)  return true;
-      if (nx + r > 2100 && nx - r < 2500 && ny + r > 300 && ny - r < 500) return true;
-      return false;
-    }
-    
     function resetGame() {
       px = 200;
       py = 200;
